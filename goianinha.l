@@ -27,9 +27,9 @@ int string_start_line = 0;
 
 \"[^"\n]*\"             { return CONSTSTRING; /* String completa em uma linha */ }
 
-\"[^"\n]*$              { printf("ERRO: CADEIA DE CARACTERES NAO TERMINADA %d\n", yylineno); return 0; }
+\"[^"\n]*$              { printf("ERRO: CADEIA DE CARACTERES NAO TERMINADA na linha %d\n", yylineno); return 0; }
 
-\"[^"]*\n[^"]*\"        { printf("ERRO: CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA %d\n", yylineno); return 0; }
+\"[^"]*\n[^"]*\"        { printf("ERRO: CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA na linha %d\n", yylineno); return 0; }
 
 "+"                 { return MAIS; }
 "-"                 { return MENOS; }
@@ -57,9 +57,9 @@ int string_start_line = 0;
 
 \/\*([^*]|\*+[^*/])*\*+\/    { /* ignorar comentários corretos */ }
 
-\/\*([^*]|\*[^/])*$          { printf("ERRO: COMENTÁRIO NAO TERMINA %d\n", yylineno); return 0; }
+\/\*([^*\/]|\*[^/])*$          { printf("ERRO: COMENTÁRIO NAO TERMINA na linha %d\n", yylineno); return 0; }
 
-.                            { printf("ERRO: CARACTERE INVÁLIDO %d\n", yylineno); return 0; }
+.                            { printf("ERRO: CARACTERE INVÁLIDO na linha %d\n", yylineno); return 0; }
 
 %%
 
