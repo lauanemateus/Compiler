@@ -1,0 +1,215 @@
+Universidade Federal de Goiás
+Instituto de Informática
+Compiladores
+2025-2
+Compilador para a Linguagem Goianinha
+Trabalho 1 - Implementação da Tabela de Símbolos, do Analisador Léxico e do Analisador Sintático
+Thierson Couto Rosa
+
+**1 Objetivo**
+
+Este projeto tem como objetivo a implementação de um compilador didático para a linguagem Goianinha. O presente texto descreve a Etapa I do projeto que consiste na especificação de funções que implementem uma tabela de símbolos de símbolos e do analisadores e sintáticos para a linguagem.
+
+**2 Gramática para a linguagem Goianinha**
+
+A seguir, é apresentada a gramática para a linguagem Goianinha. Os não-terminais da gramática iniciam-se com letra maiúscula e o símbolo inicial é Programa. Os terminais aparecem em negrito quando são formados por palavras ou por sequência de caracteres. Exemplo: **int**, **+, -, (), <=** etc. Os terminais da gramática correspondem aos tokens (linguagens regulares) da linguagem Goianinha.
+
+* **Programa**
+    → Decl FuncVar Decl Prog
+
+* **Decl FuncVar**
+    → Tipo **id** DeclVar; DeclFuncVar
+    → Tipo **id** Decl Func Decl FuncVar
+    → €
+
+* **Decl Prog**
+    → **programa** Bloco
+
+* **DeclVar**
+    →, **id** DeclVar
+
+* **Decl Func**
+    → (ListaParametros) Bloco
+
+* **Lista Parametros**
+    → Lista ParametrosCont
+
+* **Lista ParametrosCont**
+    → Tipo **id**
+    → Tipo **id**, Lista Parametros Cont
+
+* **Bloco**
+    → **{** Lista DeclVar ListaComando **}**
+    → **{** Lista DeclVar **}**
+
+* **Lista DeclVar**
+    → E
+    → Tipo **id** DeclVar; Lista DeclVar
+
+* **Tipo**
+    → **int**
+    → **car**
+
+* **ListaComando**
+    → Comando
+    → Comando ListaComando
+
+* **Comando**
+    →;
+    → Expr;
+    → **retorne** Expr;
+    → **leia** LValue Expr;
+    → **escreva** Expr;
+    → **escreva** "**cadeiaCaracteres**";
+    → **novalinha**;
+    → **se** (**Expr**) **entao** Comando
+    → **se** (**Expr**) **entao** Comando **senao** Comando
+    → **enquanto** (**Expr**) **execute** Comando
+    → Bloco
+
+* **Expr**
+    → Or Expr
+    → LValueExpr = AssignExpr
+    → Or Expr **ou** AndExpr
+
+* **AndExpr**
+    → AndExpr **e** EqExpr
+    → EqExpr
+
+* **EqExpr**
+    → EqExpr == DesigExpr
+    → EqExpr != DesigExpr
+    → DesigExpr
+
+* **DesigExpr**
+    → DesigExpr < AddExpr
+    → DesigExpr > AddExpr
+    → DesigExpr >= AddExpr
+    → DesigExpr <= AddExpr
+    → AddExpr
+
+* **AddExpr**
+    → AddExpr + MulExpr
+    → AddExpr - MulExpr
+    → MulExpr
+
+* **MulExpr**
+    → MulExpr * UnExpr
+    → MulExpr / UnExpr
+    → UnExpr
+
+* **UnExpr**
+    → -PrimExpr
+    → ! PrimExpr
+    → PrimExpr
+
+* **LValueExpr**
+    → **id**
+
+* **PrimExpr**
+    → **id** (**ListExpr**)
+    → **id** ()
+    → **id**
+    → **carconst**
+    → **intconst**
+    → (**Expr**)
+
+* **ListExpr**
+    → Expr
+    → List Expr, Expr
+
+**3 Tabela de Símbolos para a linguagem Goianinha**
+
+Conforme mostra a descrição da gramática, um bloco pode conter uma lista de declaração de variáveis locais (que pode ser vazia) e pode ou não ter uma lista de comandos. Porém, um comando da lista de comandos pode ser um outro bloco. Ou seja, os blocos aninham-se uns dentro dos outros. Além disso, cada bloco que possui uma declaração de variáveis locais inicia um escopo novo, exceto no caso de funções onde os identificadores que formam os parâmetros da função estão no mesmo escopo do bloco da função. Essa situação permite a coexistência de variáveis/parâmetros distintos que possuem o mesmo lexema de identificador (mesmo nome), por exemplo um mesmo nome declarado em um escopo mais externo e outro objeto de nomez declarado em um escopo mais interno. Veja explicações mais detalhadas no slide sobre tabelas de símbolos na Plataforma Turing.
+
+Nesta parte do trabalho deve ser implementada uma pilha de tabela de símbolos (ou tabela de lexemas de identificadores) capaz de armazenar lexemas de identificador. Essa estrutura deve ter associada a ela o seguinte conjunto de operações:
+
+a) iniciar a pilha de tabela de símbolos operação que cria uma estrutura de dados inicialmente vazia para representar a pilha de tabelas de símbolos (pilha de escopos);
+
+b) criar uma nova tabela de símbolos (novo escopo) e empilhá-la na pilha de tabela de símbolos.
+
+c) pesquisar por um nome (lexema de identificador) na pilha de tabelas de símbolos. Essa operação deve iniciar a pesquisa na tabela que está no topo da pilha (tabela de símbolos correspondente ao último escopo criado) e enquanto não encontrar, procurar nas tabelas seguintes, do topo em direção à base da pilha de tabelas de símbolos. Deve retornar um ponteiro para a entrada da tabela de símbolos onde o nome foi encontrado ou um ponteiro vazio, caso o nome procurado não se encontre na pilha de tabelas.
+
+d) remover escopo atual essa função elimina a tabela de símbolos que está no topo da pilha de tabelas.
+
+e) inserir um nome de função na tabela de símbolos atual (que está no topo da pilha de tabelas). Essa operação deve conter como parâmetros: a string com o nome da função, um número inteiro correspondente ao número de argumentos da função, o tipo retornado pela função (os dois últimos parâmetros serão úteis para as fases de análise semântica e/ou geração de código do compilador). Se a função tiver argumentos, será necessário criar um esquema especial para armazenar informações sobre o lexema correspondente ao identificador de cada argumento. Nesse caso, a entrada da tabela de símbolos que contém o nome de uma função deve conter essa estrutura especial, ou ter um ponteiro que contenha o endereço dessa estrutura.
+
+observação: Os lexemas de argumentos de uma função têm uma característica distinta dos demais lexemas nas tabelas de símbolos. Eles não podem ser acessíveis em escopos externos à função. Por outro lado, em uma chamada à função que pode ser externa à função (chamada não recursiva), o compilador precisa ter acesso aos argumentos para checar se os tipos dos argumentos reais que aparecem na chamada correspondem aos tipos dos argumentos formais da função. Portanto, há um quase-dilema nesse caso: os lexemas dos argumentos não podem ser vistos pelo código do usuário que está em um escopo externo à função. Por outro lado, o compilador precisa ter acesso aos lexemas dos argumentos e a seus tipos para fazer a checagem de tipos durante uma chamada. Essa é a razão pela qual os argumentos precisam ser tratados de forma distinta dos demais identificadores na pilha de tabelas.
+
+f) inserir um nome de variável na tabela de símbolos atual. Essa operação deve ter como parâmetros: a string com o nome da variável, um inteiro indicando o tipo da variável (informação a ser utilizada futuramente, na análise semântica) e um inteiro positivo, indicando em qual posição da lista de declaração de variáveis a variável ocorreu (essa informação será útil posteriormente, para a geração de código).
+
+g) inserir o nome de um parâmetro na tabela de símbolos atual. Essa operação deve ter como parâmetros: a string com o nome do parâmetro, um inteiro indicando o tipo do parâmetro (informação a ser utilizada futuramente, na análise semântica), um inteiro positivo, indicando em qual posição da lista de declaração de parâmetro o parâmetro ocorreu (essa informação será útil posteriormente, para a geração de código).
+
+h) eliminar a pilha de tabelas de símbolos.
+
+Importante. No momento atual da disciplina não fica clara a importância da pilha de tabela de símbolos. Ela será utilizada pelo analisador semântico e pelo gerador de código. Portanto, nesta primeira fase, o(a) aluno(a) deve implementar um programa de teste, apenas para demonstrar que as funções descritas acima funcionam corretamente.
+
+**4 Analisador Léxico**
+
+A função que implementa o analisador léxico poderá ser gerada automaticamente, utilizando-se um gerador de analisadores léxicos, por exemplo, Lex, ou Flex. O Lex e o Flex geram um analisador léxico escrito na linguagem C. O Flex possui, ainda, a opção de gerar um analisador léxico na linguagem C++. A função gerada deve ser capaz de reconhecer os tokens da gramática da linguagem Goianinha especificada na Seção 2. Os tokens correspondem aos símbolos e palavras que aparecem em negrito na gramática. As palavras reservadas de Goianinha são: **programa, car, int, retorne, leia, escreva, novalinha, se, entao, senao, enquanto, execute**. No caso em que o token é uma constante string (constString), ou um identificador (id), a função deve obter como lexema, o texto que forma a string ou o identificador (ex.: "x1", "cont2"). Um identificador em Goianinha deve iniciar com letra ou "_" seguido de uma letra e esta letra pode ser seguida de zero ou mais letras, dígitos ou "_".
+
+O analisador léxico deverá também processar e descartar comentários. Os comentários podem ocupar mais de uma linha do programa fonte. Um comentário em Goianinha inicia com o par de símbolos "/*" e termina com o par de símbolos "*/". Um erro deve ser reportado, caso um comentário não termine.
+
+O analisador léxico deve reportar, através de mensagens, erros léxicos encontrados no arquivo de entrada. São exemplos de erros léxicos: caracteres inválidos na linguagem, comentários que não terminam, cadeia de caracteres que não terminam ou que ocupam mais de uma linha no arquivo de entrada. Caso o arquivo contenha um erro léxico, o programa deverá imprimir uma linha contendo exatamente o seguinte: ERRO:, seguido por um espaço em branco e, por uma das seguintes mensagens de erro: CARACTERE INVÁLIDO ou COMENTÁRIO NAO TERMINA ou CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA. Após a mensagem de erro o programa deve imprimir, na mesma linha, o número da linha do programa fonte onde o erro foi encontrado.
+
+Geralmente, o código obtido por uma ferramenta geradora de analisador léxico corresponde a uma função na linguagem para a qual o analisador é gerado. Por exemplo, o Flex e o Lex geram uma função denominada yylex(). essa função é do tipo int e precisa retornar ao programa que a chama uma constante inteira que indica o token encontrado. A função deve retornar -1 (EOF) quando o fim de arquivo (padrão iiEOFii, veja manual da ferramenta) é encontrado. A função yylex() armazena em uma variável global yytext o lexema encontrado na entrada. Essa variável é um ponteiro para char e deve ser uma variável global, pois seu conteúdo será acessado pelo código gerado pela ferramenta e pelo programa que irá chamar a função yytext().
+
+**5 Programa para teste do analisador léxico (opcional)**
+
+Para ser possível testar o código do analisador léxico gerado antes de se ter um analisador sintático pronto, pode ser implementado, em um arquivo separado, um programa main.c que estamos chamando aqui de "Falso sintático". Este programa não faz análise sintática. Ele apenas fica chamando recursivamente a função yylex() e imprimindo o token e o lexema encontrados pela função. Para cada token encontrado, o programa imprime ainda a linha onde o token ocorreu, através da variável global yylineno. Esse programa será substituído posteriormente pelo código do analisador sintático obtido por outra ferramenta, geradora de analisadores sintáticos (ex. Bison, Yacc).
+
+Esse programa precisa ter as seguintes declarações:
+
+* FILE *yyin;
+* extern int yylineno;
+* extern char* yytext;
+* extern int yylex();
+
+A variável global yyin é utilizada pela função yylex() gerada pelo Flex/Lex para processar o arquivo de entrada, lendo caractere por caractere do mesmo. A variável global yylineno contém a linha do arquivo de entrada onde o token/lexema foi encontrado. A variável global yytext é uma string que armazena o lexema encontrado (palavra que casa com a expressão regular que define o token). A função yylex() é a função na linguagem C que corresponde ao analisador léxico produzido pelo ferramenta geradora (Lex/Flex). Essa função também é definida globalmente no arquivo em C gerado pela ferramenta geradora de analisador léxico utilizada. As três últimas declarações devem ser precedidas pela palavra-chave extern, pois elas já foram definidas no código em C gerado pelo Flex/Lex. Se a palavra extern for omitida, haverá conflito no momento da ligação dos dos dois arquivos objetos gerados pelo compilador da linguagem C.
+
+A função main deve ser declarada como int main(int argc, char** argv) e deve abrir o arquivo com o nome em argv[1] armazenando o ponteiro para o arquivo aberto em yyin (descrito acima). Assim, é possível chamar o executável do analisador sintático falso a partir de uma shell do Linux, passando o nome do arquivo em Goianinha a ser analisado. Por exemplo, suponha que o nome do arquivo executável correspondente a main.c seja goianinha. Suponha, ainda, que o arquivo de entrada escrito em Goianinha seja teste.g. É possível chamar o executável passando teste.g na linha de comando, digitando-se /goianinha teste.g.
+
+Observação - O programa para teste do analisador léxico ("falso analisador sintático") não deve ser entregue como parte do trabalho final; ele é sugerido apenas para que o aluno possa verificar a correção do analisador léxico antes de iniciar o desenvolvimento do analisador sintático de fato. A função main deve ter um comando de repetição controlado por fim de arquivo. Por exemplo, while(token=yylex()!=EOF) {} que fica chamando a função yylex(). A cada novo token encontrado na entrada, yylex() retorna o código do token (constante inteira presente em goianinha.c). Após cada chamada, a função main deve emitir uma mensagem: "Encontrado o lexema %s pertencente ao token de codigo %d linha %d", onde o padrão %s deve ser substituído pelo valor do lexema que está na variável yytext, o valor do primeiro "%d" deve ser substituído pelo código do token encontrado e o segundo "%d" deve ser substituído pelo número da linha onde o token foi encontrado.
+
+**6 Analisador Sintático**
+
+A função do compilador que implementa o analisador sintático pode ser gerada automaticamente utilizando-se um gerador de analisadores sintáticos ou parsers. Neste trabalho poderá ser utilizado um dos seguintes geradores: Yacc ou o Bison. Ambos utilizam o método LALR para a geração do analisador sintático. O trabalho de implementação do analisador sintático consiste na preparação do arquivo de entrada para o gerador de analisador sintático e na adaptação da função analisador sintático gerada (yyparse()) para que possa funcionar utilizando a função analisador léxico gerada pelo Lex/Flex (yylex()).
+
+Deve ser implementado o corpo da função yyerror(), de tal modo que erros sintáticos detectados pela função yyparse() sejam emitidos na tela do computador, juntamente com o número da linha onde o erro foi detectado. A mensagem de erro deve iniciar com a palavra ERRO: seguida por um espaço.
+
+É importante lembrar que os analisadores léxico e sintáticos são programas separados gerados na linguagem C. Eles precisam ser compilados separadamente e ligados para formarem um único programa. Porem, eles definem variáveis globais nos seus códigos. Para que um modulo m2 em C possa usar uma variável ou função global definida em outro módulo m1, m2 precisa avisar ao compilador e ao ligador de código que o objeto a ser utilizado foi definido externamente, no módulo m1. Para isso, no módulo m2 a declaração do objeto a ser utilizado deve ser repetida, mas precedida pela palavra extern. As váriáveis yylineno e yytext e a função yylex() são declaradas no arquivo em linguagem C gerado pelo Lex/Flex. Logo, o arquivo de entrada para o Yacc/Bisson precisa ter as seguintes declarações:
+
+* extern int yylineno;
+* extern char* yytext;
+* extern int yylex();
+
+A variável global yylineno; contém a linha do arquivo de entrada onde o token/lexema foi encontrado. A função yylex() é a função na linguagem C que corresponde ao analisador léxico produzido pelo ferramenta geradora (Lex, Flex). Essa função também é definida globalmente no arquivo em C gerado pela ferramenta geradora de analisador léxico utilizada. Logo, ela precisa ser re-declarada no arquivo de entrada para o Bison/Yacc precedida por extern. Os objetos acima são utilizados no arquivo em linguagem C gerado pelo pelo Bison/Yacc. Essa declarações devem ocorrer na primeira seção do arquivo de entrada, entre %{ e %}.
+
+A função int main(int argc, char** argv) pode ser declarada ao final do arquivo de entrada para o Bison/Yacc, ou em um arquivo separado (como foi feito no "falso analisador sintático"). O nome do arquivo de entrada deve ser passado como parâmetro para o argumento argv[1] da função main(). A função main() deve abrir esse arquivo usando o ponteiro de arquivo definido como FILE *yyin;. Dessa forma, dado que o programa executável do analisador sintático tenha o nome goianinha, e supondo que o arquivo de entrada seja teste.g, deve ser possível executar a análise sintática do arquivo através do seguinte comando em uma shell do Linux: /goianinha teste.g. A variável global yyin é utilizada pela função yylex() gerada pela ferramenta para processar o arquivo de entrada, lendo caractere por caractere do mesmo. A função main() deve abrir o arquivo com o nome em argv[1] armazenando o ponteiro para o arquivo aberto em yyin (descrito acima). Ao término da análise sintática, o arquivo passado como parâmetro deve ser fechado.
+
+**7 Informações Sobre a Implementação e a Entrega**
+
+O trabalho é individual e deve ser entregue até o dia 18/09/2025 via tarefa criada no site da disciplina na plataforma Turing. Deve ser entregue uma pasta contendo duas sub-pastas, uma com os códigos relacionados a implementação da pilha de tabelas de símbolos, e a outra, contendo os códigos relacionados ao analisador léxico, analisador sintático e um arquivo main.c, caso se opte por escrever a função main(int argc, char*[]) em um arquivo separado.
+
+A sub-pasta contendo os códigos relacionados à tabela de deve conter:
+
+* um arquivo header (.h) contendo a descrição das estruturas de dados utilizadas e protótipos das funções que manipulam a pilha de tabela de símbolos.
+* um arquivo com as implementações das funções (arquivo.c ou.c++)
+* um arquivo com a função main() que realiza os testes das funções implementadas.
+* um arquivo makefile que realiza a compilação e a ligação dos módulos.
+
+A sub-pasta contendo os códigos relacionados ao analisador léxico e sintático deve conter o seguinte:
+
+* O código de entrada para o gerador de analisador léxico utilizado (arquivo denominado goianinha.1).
+* O arquivo de entrada para o gerador de analisador sintático utilizado, isto é, Bison/Yacc. Esse arquivo deve ser denominado goianinha.y.
+* O arquivo main.c (opcional), caso se queira inserir a função main(int argc, *char[]) em um arquivo separado.
+* O arquivo Makefile contendo:
+    * Comando de execução do gerador de analisador léxico (Lex/Flex) para conversão do arquivo de entrada goianinha.1 em um programa em C (goianinha.c).
+    * Comando de execução do gerador de analisador léxico (Bison/Yacc) para conversão do arquivo de entrada goianinha.y em um programa em C (goianinha.c).
+    * Comandos de compilação e link-edição para compilar e ligar o programa principal com os código do analisador léxico e sintático gerados pelas ferramentas utilizadas, para gerar o executável goianinha.
+
+A pasta contendo as duas sub-pastas deve ser compactada com o utilitário gzip e submetida como uma tarefa a ser criada no site da disciplina. Os códigos gerados devem estar preparados para executarem no sistema operacional Linux (ambiente onde os trabalhos serão avaliados). O compilador C/C++ utilizado pelo professor para compilar os códigos será o gcc/g++ na versão 14. O Flex utilizado será o que tem versão 2.6.4. A versão do Bison utilizada pelo professor será a 3.8.2.
+
+**Importante:**
+
+Cópias idênticas ou modificadas dos códigos ou de partes dos códigos são consideradas plágios. Plágio é crime. O aluno que cometer plágio em seu trabalho receberá nota zero no mesmo.

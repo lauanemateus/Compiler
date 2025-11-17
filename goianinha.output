@@ -1,0 +1,1761 @@
+Regras inúteis no analisador por causa de conflitos
+
+   65 AssignExpr: OrExpr
+   66           | AddExpr
+   67           | MulExpr
+   68           | UnExpr
+
+
+Estado 111 conflitos: 3 de redução/redução
+Estado 112 conflitos: 3 de redução/redução
+Estado 113 conflitos: 3 de redução/redução
+Estado 114 conflitos: 3 de redução/redução
+
+
+Gramática
+
+    0 $accept: Programa $end
+
+    1 Programa: DeclFuncVar DeclProg
+
+    2 DeclFuncVar: Tipo ID DeclVar PONTO_VIRGULA DeclFuncVar
+    3            | Tipo ID DeclFunc DeclFuncVar
+    4            | ε
+
+    5 DeclProg: PROGRAMA Bloco
+
+    6 DeclVar: VIRGULA ID DeclVar
+    7        | ε
+
+    8 DeclFunc: ABRE_PAR ListaParametros FECHA_PAR Bloco
+
+    9 ListaParametros: ε
+   10                | ListaParametrosCont
+
+   11 ListaParametrosCont: Tipo ID
+   12                    | Tipo ID VIRGULA ListaParametrosCont
+
+   13 Bloco: ABRE_CHAVE ListaDeclVar ListaComando FECHA_CHAVE
+   14      | ABRE_CHAVE ListaDeclVar FECHA_CHAVE
+
+   15 ListaDeclVar: ε
+   16             | Tipo ID DeclVar PONTO_VIRGULA ListaDeclVar
+
+   17 Tipo: INT
+   18     | CAR
+
+   19 ListaComando: Comando
+   20             | Comando ListaComando
+
+   21 Comando: PONTO_VIRGULA
+   22        | Expr PONTO_VIRGULA
+   23        | RETORNE Expr PONTO_VIRGULA
+   24        | LEIA LValueExpr PONTO_VIRGULA
+   25        | ESCREVA Expr PONTO_VIRGULA
+   26        | ESCREVA CONSTSTRING PONTO_VIRGULA
+   27        | NOVALINHA PONTO_VIRGULA
+   28        | SE ABRE_PAR Expr FECHA_PAR ENTAO Comando
+   29        | SE ABRE_PAR Expr FECHA_PAR ENTAO Comando SENAO Comando
+   30        | ENQUANTO ABRE_PAR Expr FECHA_PAR EXECUTE Comando
+   31        | Bloco
+
+   32 Expr: OrExpr
+   33     | LValueExpr IGUAL Expr
+   34     | LValueExpr IGUAL AssignExpr
+
+   35 OrExpr: OrExpr OU_LOGICO AndExpr
+   36       | AndExpr
+
+   37 AndExpr: AndExpr E_LOGICO EqExpr
+   38        | EqExpr
+
+   39 EqExpr: EqExpr IGUAL_COMPARACAO DesigExpr
+   40       | EqExpr DIFERENTE DesigExpr
+   41       | DesigExpr
+
+   42 DesigExpr: DesigExpr MENOR AddExpr
+   43          | DesigExpr MAIOR AddExpr
+   44          | DesigExpr MAIORIGUAL AddExpr
+   45          | DesigExpr MENORIGUAL AddExpr
+   46          | AddExpr
+
+   47 AddExpr: AddExpr MAIS MulExpr
+   48        | AddExpr MENOS MulExpr
+   49        | MulExpr
+
+   50 MulExpr: MulExpr MULT UnExpr
+   51        | MulExpr DIV UnExpr
+   52        | UnExpr
+
+   53 UnExpr: MENOS PrimExpr
+   54       | EXCLAMACAO PrimExpr
+   55       | PrimExpr
+
+   56 LValueExpr: ID
+
+   57 PrimExpr: ID ABRE_PAR ListExpr FECHA_PAR
+   58         | ID ABRE_PAR FECHA_PAR
+   59         | ID
+   60         | CARCONST
+   61         | INTCONST
+   62         | ABRE_PAR Expr FECHA_PAR
+
+   63 ListExpr: Expr
+   64         | ListExpr VIRGULA Expr
+
+   65 AssignExpr: OrExpr
+   66           | AddExpr
+   67           | MulExpr
+   68           | UnExpr
+
+
+Terminais, com as regras onde eles aparecem
+
+    $end (0) 0
+    error (256)
+    CAR (258) 18
+    INT (259) 17
+    RETORNE (260) 23
+    LEIA (261) 24
+    ESCREVA (262) 25 26
+    NOVALINHA (263) 27
+    SE (264) 28 29
+    ENTAO (265) 28 29
+    SENAO (266) 29
+    ENQUANTO (267) 30
+    EXECUTE (268) 30
+    ID (269) 2 3 6 11 12 16 56 57 58 59
+    INTCONST (270) 61
+    CARCONST (271) 60
+    CONSTSTRING (272) 26
+    MAIS (273) 47
+    MENOS (274) 48 53
+    MULT (275) 50
+    DIV (276) 51
+    IGUAL (277) 33 34
+    IGUAL_COMPARACAO (278) 39
+    DIFERENTE (279) 40
+    MENOR (280) 42
+    MAIOR (281) 43
+    MENORIGUAL (282) 45
+    MAIORIGUAL (283) 44
+    E_LOGICO (284) 37
+    OU_LOGICO (285) 35
+    EXCLAMACAO (286) 54
+    ABRE_PAR (287) 8 28 29 30 57 58 62
+    FECHA_PAR (288) 8 28 29 30 57 58 62
+    ABRE_CHAVE (289) 13 14
+    FECHA_CHAVE (290) 13 14
+    PONTO_VIRGULA (291) 2 16 21 22 23 24 25 26 27
+    VIRGULA (292) 6 12 64
+    PROGRAMA (293) 5
+
+
+Não terminais com as regras onde eles aparecem
+
+    $accept (39)
+        à esquerda: 0
+    Programa (40)
+        à esquerda: 1
+        à direita: 0
+    DeclFuncVar (41)
+        à esquerda: 2 3 4
+        à direita: 1 2 3
+    DeclProg (42)
+        à esquerda: 5
+        à direita: 1
+    DeclVar (43)
+        à esquerda: 6 7
+        à direita: 2 6 16
+    DeclFunc (44)
+        à esquerda: 8
+        à direita: 3
+    ListaParametros (45)
+        à esquerda: 9 10
+        à direita: 8
+    ListaParametrosCont (46)
+        à esquerda: 11 12
+        à direita: 10 12
+    Bloco (47)
+        à esquerda: 13 14
+        à direita: 5 8 31
+    ListaDeclVar (48)
+        à esquerda: 15 16
+        à direita: 13 14 16
+    Tipo (49)
+        à esquerda: 17 18
+        à direita: 2 3 11 12 16
+    ListaComando (50)
+        à esquerda: 19 20
+        à direita: 13 20
+    Comando (51)
+        à esquerda: 21 22 23 24 25 26 27 28 29 30 31
+        à direita: 19 20 28 29 30
+    Expr (52)
+        à esquerda: 32 33 34
+        à direita: 22 23 25 28 29 30 33 62 63 64
+    OrExpr (53)
+        à esquerda: 35 36
+        à direita: 32 35 65
+    AndExpr (54)
+        à esquerda: 37 38
+        à direita: 35 36 37
+    EqExpr (55)
+        à esquerda: 39 40 41
+        à direita: 37 38 39 40
+    DesigExpr (56)
+        à esquerda: 42 43 44 45 46
+        à direita: 39 40 41 42 43 44 45
+    AddExpr (57)
+        à esquerda: 47 48 49
+        à direita: 42 43 44 45 46 47 48 66
+    MulExpr (58)
+        à esquerda: 50 51 52
+        à direita: 47 48 49 50 51 67
+    UnExpr (59)
+        à esquerda: 53 54 55
+        à direita: 50 51 52 68
+    LValueExpr (60)
+        à esquerda: 56
+        à direita: 24 33 34
+    PrimExpr (61)
+        à esquerda: 57 58 59 60 61 62
+        à direita: 53 54 55
+    ListExpr (62)
+        à esquerda: 63 64
+        à direita: 57 64
+    AssignExpr (63)
+        à esquerda: 65 66 67 68
+        à direita: 34
+
+
+Estado 0
+
+    0 $accept: • Programa $end
+
+    CAR  deslocar, e ir ao estado 1
+    INT  deslocar, e ir ao estado 2
+
+    $padrão  reduzir usando a regra 4 (DeclFuncVar)
+
+    Programa     ir ao estado 3
+    DeclFuncVar  ir ao estado 4
+    Tipo         ir ao estado 5
+
+
+Estado 1
+
+   18 Tipo: CAR •
+
+    $padrão  reduzir usando a regra 18 (Tipo)
+
+
+Estado 2
+
+   17 Tipo: INT •
+
+    $padrão  reduzir usando a regra 17 (Tipo)
+
+
+Estado 3
+
+    0 $accept: Programa • $end
+
+    $end  deslocar, e ir ao estado 6
+
+
+Estado 4
+
+    1 Programa: DeclFuncVar • DeclProg
+
+    PROGRAMA  deslocar, e ir ao estado 7
+
+    DeclProg  ir ao estado 8
+
+
+Estado 5
+
+    2 DeclFuncVar: Tipo • ID DeclVar PONTO_VIRGULA DeclFuncVar
+    3            | Tipo • ID DeclFunc DeclFuncVar
+
+    ID  deslocar, e ir ao estado 9
+
+
+Estado 6
+
+    0 $accept: Programa $end •
+
+    $padrão  aceitar
+
+
+Estado 7
+
+    5 DeclProg: PROGRAMA • Bloco
+
+    ABRE_CHAVE  deslocar, e ir ao estado 10
+
+    Bloco  ir ao estado 11
+
+
+Estado 8
+
+    1 Programa: DeclFuncVar DeclProg •
+
+    $padrão  reduzir usando a regra 1 (Programa)
+
+
+Estado 9
+
+    2 DeclFuncVar: Tipo ID • DeclVar PONTO_VIRGULA DeclFuncVar
+    3            | Tipo ID • DeclFunc DeclFuncVar
+
+    ABRE_PAR  deslocar, e ir ao estado 12
+    VIRGULA   deslocar, e ir ao estado 13
+
+    $padrão  reduzir usando a regra 7 (DeclVar)
+
+    DeclVar   ir ao estado 14
+    DeclFunc  ir ao estado 15
+
+
+Estado 10
+
+   13 Bloco: ABRE_CHAVE • ListaDeclVar ListaComando FECHA_CHAVE
+   14      | ABRE_CHAVE • ListaDeclVar FECHA_CHAVE
+
+    CAR  deslocar, e ir ao estado 1
+    INT  deslocar, e ir ao estado 2
+
+    $padrão  reduzir usando a regra 15 (ListaDeclVar)
+
+    ListaDeclVar  ir ao estado 16
+    Tipo          ir ao estado 17
+
+
+Estado 11
+
+    5 DeclProg: PROGRAMA Bloco •
+
+    $padrão  reduzir usando a regra 5 (DeclProg)
+
+
+Estado 12
+
+    8 DeclFunc: ABRE_PAR • ListaParametros FECHA_PAR Bloco
+
+    CAR  deslocar, e ir ao estado 1
+    INT  deslocar, e ir ao estado 2
+
+    $padrão  reduzir usando a regra 9 (ListaParametros)
+
+    ListaParametros      ir ao estado 18
+    ListaParametrosCont  ir ao estado 19
+    Tipo                 ir ao estado 20
+
+
+Estado 13
+
+    6 DeclVar: VIRGULA • ID DeclVar
+
+    ID  deslocar, e ir ao estado 21
+
+
+Estado 14
+
+    2 DeclFuncVar: Tipo ID DeclVar • PONTO_VIRGULA DeclFuncVar
+
+    PONTO_VIRGULA  deslocar, e ir ao estado 22
+
+
+Estado 15
+
+    3 DeclFuncVar: Tipo ID DeclFunc • DeclFuncVar
+
+    CAR  deslocar, e ir ao estado 1
+    INT  deslocar, e ir ao estado 2
+
+    $padrão  reduzir usando a regra 4 (DeclFuncVar)
+
+    DeclFuncVar  ir ao estado 23
+    Tipo         ir ao estado 5
+
+
+Estado 16
+
+   13 Bloco: ABRE_CHAVE ListaDeclVar • ListaComando FECHA_CHAVE
+   14      | ABRE_CHAVE ListaDeclVar • FECHA_CHAVE
+
+    RETORNE        deslocar, e ir ao estado 24
+    LEIA           deslocar, e ir ao estado 25
+    ESCREVA        deslocar, e ir ao estado 26
+    NOVALINHA      deslocar, e ir ao estado 27
+    SE             deslocar, e ir ao estado 28
+    ENQUANTO       deslocar, e ir ao estado 29
+    ID             deslocar, e ir ao estado 30
+    INTCONST       deslocar, e ir ao estado 31
+    CARCONST       deslocar, e ir ao estado 32
+    MENOS          deslocar, e ir ao estado 33
+    EXCLAMACAO     deslocar, e ir ao estado 34
+    ABRE_PAR       deslocar, e ir ao estado 35
+    ABRE_CHAVE     deslocar, e ir ao estado 10
+    FECHA_CHAVE    deslocar, e ir ao estado 36
+    PONTO_VIRGULA  deslocar, e ir ao estado 37
+
+    Bloco         ir ao estado 38
+    ListaComando  ir ao estado 39
+    Comando       ir ao estado 40
+    Expr          ir ao estado 41
+    OrExpr        ir ao estado 42
+    AndExpr       ir ao estado 43
+    EqExpr        ir ao estado 44
+    DesigExpr     ir ao estado 45
+    AddExpr       ir ao estado 46
+    MulExpr       ir ao estado 47
+    UnExpr        ir ao estado 48
+    LValueExpr    ir ao estado 49
+    PrimExpr      ir ao estado 50
+
+
+Estado 17
+
+   16 ListaDeclVar: Tipo • ID DeclVar PONTO_VIRGULA ListaDeclVar
+
+    ID  deslocar, e ir ao estado 51
+
+
+Estado 18
+
+    8 DeclFunc: ABRE_PAR ListaParametros • FECHA_PAR Bloco
+
+    FECHA_PAR  deslocar, e ir ao estado 52
+
+
+Estado 19
+
+   10 ListaParametros: ListaParametrosCont •
+
+    $padrão  reduzir usando a regra 10 (ListaParametros)
+
+
+Estado 20
+
+   11 ListaParametrosCont: Tipo • ID
+   12                    | Tipo • ID VIRGULA ListaParametrosCont
+
+    ID  deslocar, e ir ao estado 53
+
+
+Estado 21
+
+    6 DeclVar: VIRGULA ID • DeclVar
+
+    VIRGULA  deslocar, e ir ao estado 13
+
+    $padrão  reduzir usando a regra 7 (DeclVar)
+
+    DeclVar  ir ao estado 54
+
+
+Estado 22
+
+    2 DeclFuncVar: Tipo ID DeclVar PONTO_VIRGULA • DeclFuncVar
+
+    CAR  deslocar, e ir ao estado 1
+    INT  deslocar, e ir ao estado 2
+
+    $padrão  reduzir usando a regra 4 (DeclFuncVar)
+
+    DeclFuncVar  ir ao estado 55
+    Tipo         ir ao estado 5
+
+
+Estado 23
+
+    3 DeclFuncVar: Tipo ID DeclFunc DeclFuncVar •
+
+    $padrão  reduzir usando a regra 3 (DeclFuncVar)
+
+
+Estado 24
+
+   23 Comando: RETORNE • Expr PONTO_VIRGULA
+
+    ID          deslocar, e ir ao estado 30
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    Expr        ir ao estado 56
+    OrExpr      ir ao estado 42
+    AndExpr     ir ao estado 43
+    EqExpr      ir ao estado 44
+    DesigExpr   ir ao estado 45
+    AddExpr     ir ao estado 46
+    MulExpr     ir ao estado 47
+    UnExpr      ir ao estado 48
+    LValueExpr  ir ao estado 49
+    PrimExpr    ir ao estado 50
+
+
+Estado 25
+
+   24 Comando: LEIA • LValueExpr PONTO_VIRGULA
+
+    ID  deslocar, e ir ao estado 57
+
+    LValueExpr  ir ao estado 58
+
+
+Estado 26
+
+   25 Comando: ESCREVA • Expr PONTO_VIRGULA
+   26        | ESCREVA • CONSTSTRING PONTO_VIRGULA
+
+    ID           deslocar, e ir ao estado 30
+    INTCONST     deslocar, e ir ao estado 31
+    CARCONST     deslocar, e ir ao estado 32
+    CONSTSTRING  deslocar, e ir ao estado 59
+    MENOS        deslocar, e ir ao estado 33
+    EXCLAMACAO   deslocar, e ir ao estado 34
+    ABRE_PAR     deslocar, e ir ao estado 35
+
+    Expr        ir ao estado 60
+    OrExpr      ir ao estado 42
+    AndExpr     ir ao estado 43
+    EqExpr      ir ao estado 44
+    DesigExpr   ir ao estado 45
+    AddExpr     ir ao estado 46
+    MulExpr     ir ao estado 47
+    UnExpr      ir ao estado 48
+    LValueExpr  ir ao estado 49
+    PrimExpr    ir ao estado 50
+
+
+Estado 27
+
+   27 Comando: NOVALINHA • PONTO_VIRGULA
+
+    PONTO_VIRGULA  deslocar, e ir ao estado 61
+
+
+Estado 28
+
+   28 Comando: SE • ABRE_PAR Expr FECHA_PAR ENTAO Comando
+   29        | SE • ABRE_PAR Expr FECHA_PAR ENTAO Comando SENAO Comando
+
+    ABRE_PAR  deslocar, e ir ao estado 62
+
+
+Estado 29
+
+   30 Comando: ENQUANTO • ABRE_PAR Expr FECHA_PAR EXECUTE Comando
+
+    ABRE_PAR  deslocar, e ir ao estado 63
+
+
+Estado 30
+
+   56 LValueExpr: ID •
+   57 PrimExpr: ID • ABRE_PAR ListExpr FECHA_PAR
+   58         | ID • ABRE_PAR FECHA_PAR
+   59         | ID •
+
+    ABRE_PAR  deslocar, e ir ao estado 64
+
+    IGUAL    reduzir usando a regra 56 (LValueExpr)
+    $padrão  reduzir usando a regra 59 (PrimExpr)
+
+
+Estado 31
+
+   61 PrimExpr: INTCONST •
+
+    $padrão  reduzir usando a regra 61 (PrimExpr)
+
+
+Estado 32
+
+   60 PrimExpr: CARCONST •
+
+    $padrão  reduzir usando a regra 60 (PrimExpr)
+
+
+Estado 33
+
+   53 UnExpr: MENOS • PrimExpr
+
+    ID        deslocar, e ir ao estado 65
+    INTCONST  deslocar, e ir ao estado 31
+    CARCONST  deslocar, e ir ao estado 32
+    ABRE_PAR  deslocar, e ir ao estado 35
+
+    PrimExpr  ir ao estado 66
+
+
+Estado 34
+
+   54 UnExpr: EXCLAMACAO • PrimExpr
+
+    ID        deslocar, e ir ao estado 65
+    INTCONST  deslocar, e ir ao estado 31
+    CARCONST  deslocar, e ir ao estado 32
+    ABRE_PAR  deslocar, e ir ao estado 35
+
+    PrimExpr  ir ao estado 67
+
+
+Estado 35
+
+   62 PrimExpr: ABRE_PAR • Expr FECHA_PAR
+
+    ID          deslocar, e ir ao estado 30
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    Expr        ir ao estado 68
+    OrExpr      ir ao estado 42
+    AndExpr     ir ao estado 43
+    EqExpr      ir ao estado 44
+    DesigExpr   ir ao estado 45
+    AddExpr     ir ao estado 46
+    MulExpr     ir ao estado 47
+    UnExpr      ir ao estado 48
+    LValueExpr  ir ao estado 49
+    PrimExpr    ir ao estado 50
+
+
+Estado 36
+
+   14 Bloco: ABRE_CHAVE ListaDeclVar FECHA_CHAVE •
+
+    $padrão  reduzir usando a regra 14 (Bloco)
+
+
+Estado 37
+
+   21 Comando: PONTO_VIRGULA •
+
+    $padrão  reduzir usando a regra 21 (Comando)
+
+
+Estado 38
+
+   31 Comando: Bloco •
+
+    $padrão  reduzir usando a regra 31 (Comando)
+
+
+Estado 39
+
+   13 Bloco: ABRE_CHAVE ListaDeclVar ListaComando • FECHA_CHAVE
+
+    FECHA_CHAVE  deslocar, e ir ao estado 69
+
+
+Estado 40
+
+   19 ListaComando: Comando •
+   20             | Comando • ListaComando
+
+    RETORNE        deslocar, e ir ao estado 24
+    LEIA           deslocar, e ir ao estado 25
+    ESCREVA        deslocar, e ir ao estado 26
+    NOVALINHA      deslocar, e ir ao estado 27
+    SE             deslocar, e ir ao estado 28
+    ENQUANTO       deslocar, e ir ao estado 29
+    ID             deslocar, e ir ao estado 30
+    INTCONST       deslocar, e ir ao estado 31
+    CARCONST       deslocar, e ir ao estado 32
+    MENOS          deslocar, e ir ao estado 33
+    EXCLAMACAO     deslocar, e ir ao estado 34
+    ABRE_PAR       deslocar, e ir ao estado 35
+    ABRE_CHAVE     deslocar, e ir ao estado 10
+    PONTO_VIRGULA  deslocar, e ir ao estado 37
+
+    $padrão  reduzir usando a regra 19 (ListaComando)
+
+    Bloco         ir ao estado 38
+    ListaComando  ir ao estado 70
+    Comando       ir ao estado 40
+    Expr          ir ao estado 41
+    OrExpr        ir ao estado 42
+    AndExpr       ir ao estado 43
+    EqExpr        ir ao estado 44
+    DesigExpr     ir ao estado 45
+    AddExpr       ir ao estado 46
+    MulExpr       ir ao estado 47
+    UnExpr        ir ao estado 48
+    LValueExpr    ir ao estado 49
+    PrimExpr      ir ao estado 50
+
+
+Estado 41
+
+   22 Comando: Expr • PONTO_VIRGULA
+
+    PONTO_VIRGULA  deslocar, e ir ao estado 71
+
+
+Estado 42
+
+   32 Expr: OrExpr •
+   35 OrExpr: OrExpr • OU_LOGICO AndExpr
+
+    OU_LOGICO  deslocar, e ir ao estado 72
+
+    $padrão  reduzir usando a regra 32 (Expr)
+
+
+Estado 43
+
+   36 OrExpr: AndExpr •
+   37 AndExpr: AndExpr • E_LOGICO EqExpr
+
+    E_LOGICO  deslocar, e ir ao estado 73
+
+    $padrão  reduzir usando a regra 36 (OrExpr)
+
+
+Estado 44
+
+   38 AndExpr: EqExpr •
+   39 EqExpr: EqExpr • IGUAL_COMPARACAO DesigExpr
+   40       | EqExpr • DIFERENTE DesigExpr
+
+    IGUAL_COMPARACAO  deslocar, e ir ao estado 74
+    DIFERENTE         deslocar, e ir ao estado 75
+
+    $padrão  reduzir usando a regra 38 (AndExpr)
+
+
+Estado 45
+
+   41 EqExpr: DesigExpr •
+   42 DesigExpr: DesigExpr • MENOR AddExpr
+   43          | DesigExpr • MAIOR AddExpr
+   44          | DesigExpr • MAIORIGUAL AddExpr
+   45          | DesigExpr • MENORIGUAL AddExpr
+
+    MENOR       deslocar, e ir ao estado 76
+    MAIOR       deslocar, e ir ao estado 77
+    MENORIGUAL  deslocar, e ir ao estado 78
+    MAIORIGUAL  deslocar, e ir ao estado 79
+
+    $padrão  reduzir usando a regra 41 (EqExpr)
+
+
+Estado 46
+
+   46 DesigExpr: AddExpr •
+   47 AddExpr: AddExpr • MAIS MulExpr
+   48        | AddExpr • MENOS MulExpr
+
+    MAIS   deslocar, e ir ao estado 80
+    MENOS  deslocar, e ir ao estado 81
+
+    $padrão  reduzir usando a regra 46 (DesigExpr)
+
+
+Estado 47
+
+   49 AddExpr: MulExpr •
+   50 MulExpr: MulExpr • MULT UnExpr
+   51        | MulExpr • DIV UnExpr
+
+    MULT  deslocar, e ir ao estado 82
+    DIV   deslocar, e ir ao estado 83
+
+    $padrão  reduzir usando a regra 49 (AddExpr)
+
+
+Estado 48
+
+   52 MulExpr: UnExpr •
+
+    $padrão  reduzir usando a regra 52 (MulExpr)
+
+
+Estado 49
+
+   33 Expr: LValueExpr • IGUAL Expr
+   34     | LValueExpr • IGUAL AssignExpr
+
+    IGUAL  deslocar, e ir ao estado 84
+
+
+Estado 50
+
+   55 UnExpr: PrimExpr •
+
+    $padrão  reduzir usando a regra 55 (UnExpr)
+
+
+Estado 51
+
+   16 ListaDeclVar: Tipo ID • DeclVar PONTO_VIRGULA ListaDeclVar
+
+    VIRGULA  deslocar, e ir ao estado 13
+
+    $padrão  reduzir usando a regra 7 (DeclVar)
+
+    DeclVar  ir ao estado 85
+
+
+Estado 52
+
+    8 DeclFunc: ABRE_PAR ListaParametros FECHA_PAR • Bloco
+
+    ABRE_CHAVE  deslocar, e ir ao estado 10
+
+    Bloco  ir ao estado 86
+
+
+Estado 53
+
+   11 ListaParametrosCont: Tipo ID •
+   12                    | Tipo ID • VIRGULA ListaParametrosCont
+
+    VIRGULA  deslocar, e ir ao estado 87
+
+    $padrão  reduzir usando a regra 11 (ListaParametrosCont)
+
+
+Estado 54
+
+    6 DeclVar: VIRGULA ID DeclVar •
+
+    $padrão  reduzir usando a regra 6 (DeclVar)
+
+
+Estado 55
+
+    2 DeclFuncVar: Tipo ID DeclVar PONTO_VIRGULA DeclFuncVar •
+
+    $padrão  reduzir usando a regra 2 (DeclFuncVar)
+
+
+Estado 56
+
+   23 Comando: RETORNE Expr • PONTO_VIRGULA
+
+    PONTO_VIRGULA  deslocar, e ir ao estado 88
+
+
+Estado 57
+
+   56 LValueExpr: ID •
+
+    $padrão  reduzir usando a regra 56 (LValueExpr)
+
+
+Estado 58
+
+   24 Comando: LEIA LValueExpr • PONTO_VIRGULA
+
+    PONTO_VIRGULA  deslocar, e ir ao estado 89
+
+
+Estado 59
+
+   26 Comando: ESCREVA CONSTSTRING • PONTO_VIRGULA
+
+    PONTO_VIRGULA  deslocar, e ir ao estado 90
+
+
+Estado 60
+
+   25 Comando: ESCREVA Expr • PONTO_VIRGULA
+
+    PONTO_VIRGULA  deslocar, e ir ao estado 91
+
+
+Estado 61
+
+   27 Comando: NOVALINHA PONTO_VIRGULA •
+
+    $padrão  reduzir usando a regra 27 (Comando)
+
+
+Estado 62
+
+   28 Comando: SE ABRE_PAR • Expr FECHA_PAR ENTAO Comando
+   29        | SE ABRE_PAR • Expr FECHA_PAR ENTAO Comando SENAO Comando
+
+    ID          deslocar, e ir ao estado 30
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    Expr        ir ao estado 92
+    OrExpr      ir ao estado 42
+    AndExpr     ir ao estado 43
+    EqExpr      ir ao estado 44
+    DesigExpr   ir ao estado 45
+    AddExpr     ir ao estado 46
+    MulExpr     ir ao estado 47
+    UnExpr      ir ao estado 48
+    LValueExpr  ir ao estado 49
+    PrimExpr    ir ao estado 50
+
+
+Estado 63
+
+   30 Comando: ENQUANTO ABRE_PAR • Expr FECHA_PAR EXECUTE Comando
+
+    ID          deslocar, e ir ao estado 30
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    Expr        ir ao estado 93
+    OrExpr      ir ao estado 42
+    AndExpr     ir ao estado 43
+    EqExpr      ir ao estado 44
+    DesigExpr   ir ao estado 45
+    AddExpr     ir ao estado 46
+    MulExpr     ir ao estado 47
+    UnExpr      ir ao estado 48
+    LValueExpr  ir ao estado 49
+    PrimExpr    ir ao estado 50
+
+
+Estado 64
+
+   57 PrimExpr: ID ABRE_PAR • ListExpr FECHA_PAR
+   58         | ID ABRE_PAR • FECHA_PAR
+
+    ID          deslocar, e ir ao estado 30
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+    FECHA_PAR   deslocar, e ir ao estado 94
+
+    Expr        ir ao estado 95
+    OrExpr      ir ao estado 42
+    AndExpr     ir ao estado 43
+    EqExpr      ir ao estado 44
+    DesigExpr   ir ao estado 45
+    AddExpr     ir ao estado 46
+    MulExpr     ir ao estado 47
+    UnExpr      ir ao estado 48
+    LValueExpr  ir ao estado 49
+    PrimExpr    ir ao estado 50
+    ListExpr    ir ao estado 96
+
+
+Estado 65
+
+   57 PrimExpr: ID • ABRE_PAR ListExpr FECHA_PAR
+   58         | ID • ABRE_PAR FECHA_PAR
+   59         | ID •
+
+    ABRE_PAR  deslocar, e ir ao estado 64
+
+    $padrão  reduzir usando a regra 59 (PrimExpr)
+
+
+Estado 66
+
+   53 UnExpr: MENOS PrimExpr •
+
+    $padrão  reduzir usando a regra 53 (UnExpr)
+
+
+Estado 67
+
+   54 UnExpr: EXCLAMACAO PrimExpr •
+
+    $padrão  reduzir usando a regra 54 (UnExpr)
+
+
+Estado 68
+
+   62 PrimExpr: ABRE_PAR Expr • FECHA_PAR
+
+    FECHA_PAR  deslocar, e ir ao estado 97
+
+
+Estado 69
+
+   13 Bloco: ABRE_CHAVE ListaDeclVar ListaComando FECHA_CHAVE •
+
+    $padrão  reduzir usando a regra 13 (Bloco)
+
+
+Estado 70
+
+   20 ListaComando: Comando ListaComando •
+
+    $padrão  reduzir usando a regra 20 (ListaComando)
+
+
+Estado 71
+
+   22 Comando: Expr PONTO_VIRGULA •
+
+    $padrão  reduzir usando a regra 22 (Comando)
+
+
+Estado 72
+
+   35 OrExpr: OrExpr OU_LOGICO • AndExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    AndExpr    ir ao estado 98
+    EqExpr     ir ao estado 44
+    DesigExpr  ir ao estado 45
+    AddExpr    ir ao estado 46
+    MulExpr    ir ao estado 47
+    UnExpr     ir ao estado 48
+    PrimExpr   ir ao estado 50
+
+
+Estado 73
+
+   37 AndExpr: AndExpr E_LOGICO • EqExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    EqExpr     ir ao estado 99
+    DesigExpr  ir ao estado 45
+    AddExpr    ir ao estado 46
+    MulExpr    ir ao estado 47
+    UnExpr     ir ao estado 48
+    PrimExpr   ir ao estado 50
+
+
+Estado 74
+
+   39 EqExpr: EqExpr IGUAL_COMPARACAO • DesigExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    DesigExpr  ir ao estado 100
+    AddExpr    ir ao estado 46
+    MulExpr    ir ao estado 47
+    UnExpr     ir ao estado 48
+    PrimExpr   ir ao estado 50
+
+
+Estado 75
+
+   40 EqExpr: EqExpr DIFERENTE • DesigExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    DesigExpr  ir ao estado 101
+    AddExpr    ir ao estado 46
+    MulExpr    ir ao estado 47
+    UnExpr     ir ao estado 48
+    PrimExpr   ir ao estado 50
+
+
+Estado 76
+
+   42 DesigExpr: DesigExpr MENOR • AddExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    AddExpr   ir ao estado 102
+    MulExpr   ir ao estado 47
+    UnExpr    ir ao estado 48
+    PrimExpr  ir ao estado 50
+
+
+Estado 77
+
+   43 DesigExpr: DesigExpr MAIOR • AddExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    AddExpr   ir ao estado 103
+    MulExpr   ir ao estado 47
+    UnExpr    ir ao estado 48
+    PrimExpr  ir ao estado 50
+
+
+Estado 78
+
+   45 DesigExpr: DesigExpr MENORIGUAL • AddExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    AddExpr   ir ao estado 104
+    MulExpr   ir ao estado 47
+    UnExpr    ir ao estado 48
+    PrimExpr  ir ao estado 50
+
+
+Estado 79
+
+   44 DesigExpr: DesigExpr MAIORIGUAL • AddExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    AddExpr   ir ao estado 105
+    MulExpr   ir ao estado 47
+    UnExpr    ir ao estado 48
+    PrimExpr  ir ao estado 50
+
+
+Estado 80
+
+   47 AddExpr: AddExpr MAIS • MulExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    MulExpr   ir ao estado 106
+    UnExpr    ir ao estado 48
+    PrimExpr  ir ao estado 50
+
+
+Estado 81
+
+   48 AddExpr: AddExpr MENOS • MulExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    MulExpr   ir ao estado 107
+    UnExpr    ir ao estado 48
+    PrimExpr  ir ao estado 50
+
+
+Estado 82
+
+   50 MulExpr: MulExpr MULT • UnExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    UnExpr    ir ao estado 108
+    PrimExpr  ir ao estado 50
+
+
+Estado 83
+
+   51 MulExpr: MulExpr DIV • UnExpr
+
+    ID          deslocar, e ir ao estado 65
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    UnExpr    ir ao estado 109
+    PrimExpr  ir ao estado 50
+
+
+Estado 84
+
+   33 Expr: LValueExpr IGUAL • Expr
+   34     | LValueExpr IGUAL • AssignExpr
+
+    ID          deslocar, e ir ao estado 30
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    Expr        ir ao estado 110
+    OrExpr      ir ao estado 111
+    AndExpr     ir ao estado 43
+    EqExpr      ir ao estado 44
+    DesigExpr   ir ao estado 45
+    AddExpr     ir ao estado 112
+    MulExpr     ir ao estado 113
+    UnExpr      ir ao estado 114
+    LValueExpr  ir ao estado 49
+    PrimExpr    ir ao estado 50
+    AssignExpr  ir ao estado 115
+
+
+Estado 85
+
+   16 ListaDeclVar: Tipo ID DeclVar • PONTO_VIRGULA ListaDeclVar
+
+    PONTO_VIRGULA  deslocar, e ir ao estado 116
+
+
+Estado 86
+
+    8 DeclFunc: ABRE_PAR ListaParametros FECHA_PAR Bloco •
+
+    $padrão  reduzir usando a regra 8 (DeclFunc)
+
+
+Estado 87
+
+   12 ListaParametrosCont: Tipo ID VIRGULA • ListaParametrosCont
+
+    CAR  deslocar, e ir ao estado 1
+    INT  deslocar, e ir ao estado 2
+
+    ListaParametrosCont  ir ao estado 117
+    Tipo                 ir ao estado 20
+
+
+Estado 88
+
+   23 Comando: RETORNE Expr PONTO_VIRGULA •
+
+    $padrão  reduzir usando a regra 23 (Comando)
+
+
+Estado 89
+
+   24 Comando: LEIA LValueExpr PONTO_VIRGULA •
+
+    $padrão  reduzir usando a regra 24 (Comando)
+
+
+Estado 90
+
+   26 Comando: ESCREVA CONSTSTRING PONTO_VIRGULA •
+
+    $padrão  reduzir usando a regra 26 (Comando)
+
+
+Estado 91
+
+   25 Comando: ESCREVA Expr PONTO_VIRGULA •
+
+    $padrão  reduzir usando a regra 25 (Comando)
+
+
+Estado 92
+
+   28 Comando: SE ABRE_PAR Expr • FECHA_PAR ENTAO Comando
+   29        | SE ABRE_PAR Expr • FECHA_PAR ENTAO Comando SENAO Comando
+
+    FECHA_PAR  deslocar, e ir ao estado 118
+
+
+Estado 93
+
+   30 Comando: ENQUANTO ABRE_PAR Expr • FECHA_PAR EXECUTE Comando
+
+    FECHA_PAR  deslocar, e ir ao estado 119
+
+
+Estado 94
+
+   58 PrimExpr: ID ABRE_PAR FECHA_PAR •
+
+    $padrão  reduzir usando a regra 58 (PrimExpr)
+
+
+Estado 95
+
+   63 ListExpr: Expr •
+
+    $padrão  reduzir usando a regra 63 (ListExpr)
+
+
+Estado 96
+
+   57 PrimExpr: ID ABRE_PAR ListExpr • FECHA_PAR
+   64 ListExpr: ListExpr • VIRGULA Expr
+
+    FECHA_PAR  deslocar, e ir ao estado 120
+    VIRGULA    deslocar, e ir ao estado 121
+
+
+Estado 97
+
+   62 PrimExpr: ABRE_PAR Expr FECHA_PAR •
+
+    $padrão  reduzir usando a regra 62 (PrimExpr)
+
+
+Estado 98
+
+   35 OrExpr: OrExpr OU_LOGICO AndExpr •
+   37 AndExpr: AndExpr • E_LOGICO EqExpr
+
+    E_LOGICO  deslocar, e ir ao estado 73
+
+    $padrão  reduzir usando a regra 35 (OrExpr)
+
+
+Estado 99
+
+   37 AndExpr: AndExpr E_LOGICO EqExpr •
+   39 EqExpr: EqExpr • IGUAL_COMPARACAO DesigExpr
+   40       | EqExpr • DIFERENTE DesigExpr
+
+    IGUAL_COMPARACAO  deslocar, e ir ao estado 74
+    DIFERENTE         deslocar, e ir ao estado 75
+
+    $padrão  reduzir usando a regra 37 (AndExpr)
+
+
+Estado 100
+
+   39 EqExpr: EqExpr IGUAL_COMPARACAO DesigExpr •
+   42 DesigExpr: DesigExpr • MENOR AddExpr
+   43          | DesigExpr • MAIOR AddExpr
+   44          | DesigExpr • MAIORIGUAL AddExpr
+   45          | DesigExpr • MENORIGUAL AddExpr
+
+    MENOR       deslocar, e ir ao estado 76
+    MAIOR       deslocar, e ir ao estado 77
+    MENORIGUAL  deslocar, e ir ao estado 78
+    MAIORIGUAL  deslocar, e ir ao estado 79
+
+    $padrão  reduzir usando a regra 39 (EqExpr)
+
+
+Estado 101
+
+   40 EqExpr: EqExpr DIFERENTE DesigExpr •
+   42 DesigExpr: DesigExpr • MENOR AddExpr
+   43          | DesigExpr • MAIOR AddExpr
+   44          | DesigExpr • MAIORIGUAL AddExpr
+   45          | DesigExpr • MENORIGUAL AddExpr
+
+    MENOR       deslocar, e ir ao estado 76
+    MAIOR       deslocar, e ir ao estado 77
+    MENORIGUAL  deslocar, e ir ao estado 78
+    MAIORIGUAL  deslocar, e ir ao estado 79
+
+    $padrão  reduzir usando a regra 40 (EqExpr)
+
+
+Estado 102
+
+   42 DesigExpr: DesigExpr MENOR AddExpr •
+   47 AddExpr: AddExpr • MAIS MulExpr
+   48        | AddExpr • MENOS MulExpr
+
+    MAIS   deslocar, e ir ao estado 80
+    MENOS  deslocar, e ir ao estado 81
+
+    $padrão  reduzir usando a regra 42 (DesigExpr)
+
+
+Estado 103
+
+   43 DesigExpr: DesigExpr MAIOR AddExpr •
+   47 AddExpr: AddExpr • MAIS MulExpr
+   48        | AddExpr • MENOS MulExpr
+
+    MAIS   deslocar, e ir ao estado 80
+    MENOS  deslocar, e ir ao estado 81
+
+    $padrão  reduzir usando a regra 43 (DesigExpr)
+
+
+Estado 104
+
+   45 DesigExpr: DesigExpr MENORIGUAL AddExpr •
+   47 AddExpr: AddExpr • MAIS MulExpr
+   48        | AddExpr • MENOS MulExpr
+
+    MAIS   deslocar, e ir ao estado 80
+    MENOS  deslocar, e ir ao estado 81
+
+    $padrão  reduzir usando a regra 45 (DesigExpr)
+
+
+Estado 105
+
+   44 DesigExpr: DesigExpr MAIORIGUAL AddExpr •
+   47 AddExpr: AddExpr • MAIS MulExpr
+   48        | AddExpr • MENOS MulExpr
+
+    MAIS   deslocar, e ir ao estado 80
+    MENOS  deslocar, e ir ao estado 81
+
+    $padrão  reduzir usando a regra 44 (DesigExpr)
+
+
+Estado 106
+
+   47 AddExpr: AddExpr MAIS MulExpr •
+   50 MulExpr: MulExpr • MULT UnExpr
+   51        | MulExpr • DIV UnExpr
+
+    MULT  deslocar, e ir ao estado 82
+    DIV   deslocar, e ir ao estado 83
+
+    $padrão  reduzir usando a regra 47 (AddExpr)
+
+
+Estado 107
+
+   48 AddExpr: AddExpr MENOS MulExpr •
+   50 MulExpr: MulExpr • MULT UnExpr
+   51        | MulExpr • DIV UnExpr
+
+    MULT  deslocar, e ir ao estado 82
+    DIV   deslocar, e ir ao estado 83
+
+    $padrão  reduzir usando a regra 48 (AddExpr)
+
+
+Estado 108
+
+   50 MulExpr: MulExpr MULT UnExpr •
+
+    $padrão  reduzir usando a regra 50 (MulExpr)
+
+
+Estado 109
+
+   51 MulExpr: MulExpr DIV UnExpr •
+
+    $padrão  reduzir usando a regra 51 (MulExpr)
+
+
+Estado 110
+
+   33 Expr: LValueExpr IGUAL Expr •
+
+    $padrão  reduzir usando a regra 33 (Expr)
+
+
+Estado 111
+
+   32 Expr: OrExpr •
+   35 OrExpr: OrExpr • OU_LOGICO AndExpr
+   65 AssignExpr: OrExpr •
+
+    OU_LOGICO  deslocar, e ir ao estado 72
+
+    FECHA_PAR      reduzir usando a regra 32 (Expr)
+    FECHA_PAR      [reduzir usando a regra 65 (AssignExpr)]
+    PONTO_VIRGULA  reduzir usando a regra 32 (Expr)
+    PONTO_VIRGULA  [reduzir usando a regra 65 (AssignExpr)]
+    VIRGULA        reduzir usando a regra 32 (Expr)
+    VIRGULA        [reduzir usando a regra 65 (AssignExpr)]
+    $padrão        reduzir usando a regra 32 (Expr)
+
+
+Estado 112
+
+   46 DesigExpr: AddExpr •
+   47 AddExpr: AddExpr • MAIS MulExpr
+   48        | AddExpr • MENOS MulExpr
+   66 AssignExpr: AddExpr •
+
+    MAIS   deslocar, e ir ao estado 80
+    MENOS  deslocar, e ir ao estado 81
+
+    FECHA_PAR      reduzir usando a regra 46 (DesigExpr)
+    FECHA_PAR      [reduzir usando a regra 66 (AssignExpr)]
+    PONTO_VIRGULA  reduzir usando a regra 46 (DesigExpr)
+    PONTO_VIRGULA  [reduzir usando a regra 66 (AssignExpr)]
+    VIRGULA        reduzir usando a regra 46 (DesigExpr)
+    VIRGULA        [reduzir usando a regra 66 (AssignExpr)]
+    $padrão        reduzir usando a regra 46 (DesigExpr)
+
+
+Estado 113
+
+   49 AddExpr: MulExpr •
+   50 MulExpr: MulExpr • MULT UnExpr
+   51        | MulExpr • DIV UnExpr
+   67 AssignExpr: MulExpr •
+
+    MULT  deslocar, e ir ao estado 82
+    DIV   deslocar, e ir ao estado 83
+
+    FECHA_PAR      reduzir usando a regra 49 (AddExpr)
+    FECHA_PAR      [reduzir usando a regra 67 (AssignExpr)]
+    PONTO_VIRGULA  reduzir usando a regra 49 (AddExpr)
+    PONTO_VIRGULA  [reduzir usando a regra 67 (AssignExpr)]
+    VIRGULA        reduzir usando a regra 49 (AddExpr)
+    VIRGULA        [reduzir usando a regra 67 (AssignExpr)]
+    $padrão        reduzir usando a regra 49 (AddExpr)
+
+
+Estado 114
+
+   52 MulExpr: UnExpr •
+   68 AssignExpr: UnExpr •
+
+    FECHA_PAR      reduzir usando a regra 52 (MulExpr)
+    FECHA_PAR      [reduzir usando a regra 68 (AssignExpr)]
+    PONTO_VIRGULA  reduzir usando a regra 52 (MulExpr)
+    PONTO_VIRGULA  [reduzir usando a regra 68 (AssignExpr)]
+    VIRGULA        reduzir usando a regra 52 (MulExpr)
+    VIRGULA        [reduzir usando a regra 68 (AssignExpr)]
+    $padrão        reduzir usando a regra 52 (MulExpr)
+
+
+Estado 115
+
+   34 Expr: LValueExpr IGUAL AssignExpr •
+
+    $padrão  reduzir usando a regra 34 (Expr)
+
+
+Estado 116
+
+   16 ListaDeclVar: Tipo ID DeclVar PONTO_VIRGULA • ListaDeclVar
+
+    CAR  deslocar, e ir ao estado 1
+    INT  deslocar, e ir ao estado 2
+
+    $padrão  reduzir usando a regra 15 (ListaDeclVar)
+
+    ListaDeclVar  ir ao estado 122
+    Tipo          ir ao estado 17
+
+
+Estado 117
+
+   12 ListaParametrosCont: Tipo ID VIRGULA ListaParametrosCont •
+
+    $padrão  reduzir usando a regra 12 (ListaParametrosCont)
+
+
+Estado 118
+
+   28 Comando: SE ABRE_PAR Expr FECHA_PAR • ENTAO Comando
+   29        | SE ABRE_PAR Expr FECHA_PAR • ENTAO Comando SENAO Comando
+
+    ENTAO  deslocar, e ir ao estado 123
+
+
+Estado 119
+
+   30 Comando: ENQUANTO ABRE_PAR Expr FECHA_PAR • EXECUTE Comando
+
+    EXECUTE  deslocar, e ir ao estado 124
+
+
+Estado 120
+
+   57 PrimExpr: ID ABRE_PAR ListExpr FECHA_PAR •
+
+    $padrão  reduzir usando a regra 57 (PrimExpr)
+
+
+Estado 121
+
+   64 ListExpr: ListExpr VIRGULA • Expr
+
+    ID          deslocar, e ir ao estado 30
+    INTCONST    deslocar, e ir ao estado 31
+    CARCONST    deslocar, e ir ao estado 32
+    MENOS       deslocar, e ir ao estado 33
+    EXCLAMACAO  deslocar, e ir ao estado 34
+    ABRE_PAR    deslocar, e ir ao estado 35
+
+    Expr        ir ao estado 125
+    OrExpr      ir ao estado 42
+    AndExpr     ir ao estado 43
+    EqExpr      ir ao estado 44
+    DesigExpr   ir ao estado 45
+    AddExpr     ir ao estado 46
+    MulExpr     ir ao estado 47
+    UnExpr      ir ao estado 48
+    LValueExpr  ir ao estado 49
+    PrimExpr    ir ao estado 50
+
+
+Estado 122
+
+   16 ListaDeclVar: Tipo ID DeclVar PONTO_VIRGULA ListaDeclVar •
+
+    $padrão  reduzir usando a regra 16 (ListaDeclVar)
+
+
+Estado 123
+
+   28 Comando: SE ABRE_PAR Expr FECHA_PAR ENTAO • Comando
+   29        | SE ABRE_PAR Expr FECHA_PAR ENTAO • Comando SENAO Comando
+
+    RETORNE        deslocar, e ir ao estado 24
+    LEIA           deslocar, e ir ao estado 25
+    ESCREVA        deslocar, e ir ao estado 26
+    NOVALINHA      deslocar, e ir ao estado 27
+    SE             deslocar, e ir ao estado 28
+    ENQUANTO       deslocar, e ir ao estado 29
+    ID             deslocar, e ir ao estado 30
+    INTCONST       deslocar, e ir ao estado 31
+    CARCONST       deslocar, e ir ao estado 32
+    MENOS          deslocar, e ir ao estado 33
+    EXCLAMACAO     deslocar, e ir ao estado 34
+    ABRE_PAR       deslocar, e ir ao estado 35
+    ABRE_CHAVE     deslocar, e ir ao estado 10
+    PONTO_VIRGULA  deslocar, e ir ao estado 37
+
+    Bloco       ir ao estado 38
+    Comando     ir ao estado 126
+    Expr        ir ao estado 41
+    OrExpr      ir ao estado 42
+    AndExpr     ir ao estado 43
+    EqExpr      ir ao estado 44
+    DesigExpr   ir ao estado 45
+    AddExpr     ir ao estado 46
+    MulExpr     ir ao estado 47
+    UnExpr      ir ao estado 48
+    LValueExpr  ir ao estado 49
+    PrimExpr    ir ao estado 50
+
+
+Estado 124
+
+   30 Comando: ENQUANTO ABRE_PAR Expr FECHA_PAR EXECUTE • Comando
+
+    RETORNE        deslocar, e ir ao estado 24
+    LEIA           deslocar, e ir ao estado 25
+    ESCREVA        deslocar, e ir ao estado 26
+    NOVALINHA      deslocar, e ir ao estado 27
+    SE             deslocar, e ir ao estado 28
+    ENQUANTO       deslocar, e ir ao estado 29
+    ID             deslocar, e ir ao estado 30
+    INTCONST       deslocar, e ir ao estado 31
+    CARCONST       deslocar, e ir ao estado 32
+    MENOS          deslocar, e ir ao estado 33
+    EXCLAMACAO     deslocar, e ir ao estado 34
+    ABRE_PAR       deslocar, e ir ao estado 35
+    ABRE_CHAVE     deslocar, e ir ao estado 10
+    PONTO_VIRGULA  deslocar, e ir ao estado 37
+
+    Bloco       ir ao estado 38
+    Comando     ir ao estado 127
+    Expr        ir ao estado 41
+    OrExpr      ir ao estado 42
+    AndExpr     ir ao estado 43
+    EqExpr      ir ao estado 44
+    DesigExpr   ir ao estado 45
+    AddExpr     ir ao estado 46
+    MulExpr     ir ao estado 47
+    UnExpr      ir ao estado 48
+    LValueExpr  ir ao estado 49
+    PrimExpr    ir ao estado 50
+
+
+Estado 125
+
+   64 ListExpr: ListExpr VIRGULA Expr •
+
+    $padrão  reduzir usando a regra 64 (ListExpr)
+
+
+Estado 126
+
+   28 Comando: SE ABRE_PAR Expr FECHA_PAR ENTAO Comando •
+   29        | SE ABRE_PAR Expr FECHA_PAR ENTAO Comando • SENAO Comando
+
+    SENAO  deslocar, e ir ao estado 128
+
+    $padrão  reduzir usando a regra 28 (Comando)
+
+
+Estado 127
+
+   30 Comando: ENQUANTO ABRE_PAR Expr FECHA_PAR EXECUTE Comando •
+
+    $padrão  reduzir usando a regra 30 (Comando)
+
+
+Estado 128
+
+   29 Comando: SE ABRE_PAR Expr FECHA_PAR ENTAO Comando SENAO • Comando
+
+    RETORNE        deslocar, e ir ao estado 24
+    LEIA           deslocar, e ir ao estado 25
+    ESCREVA        deslocar, e ir ao estado 26
+    NOVALINHA      deslocar, e ir ao estado 27
+    SE             deslocar, e ir ao estado 28
+    ENQUANTO       deslocar, e ir ao estado 29
+    ID             deslocar, e ir ao estado 30
+    INTCONST       deslocar, e ir ao estado 31
+    CARCONST       deslocar, e ir ao estado 32
+    MENOS          deslocar, e ir ao estado 33
+    EXCLAMACAO     deslocar, e ir ao estado 34
+    ABRE_PAR       deslocar, e ir ao estado 35
+    ABRE_CHAVE     deslocar, e ir ao estado 10
+    PONTO_VIRGULA  deslocar, e ir ao estado 37
+
+    Bloco       ir ao estado 38
+    Comando     ir ao estado 129
+    Expr        ir ao estado 41
+    OrExpr      ir ao estado 42
+    AndExpr     ir ao estado 43
+    EqExpr      ir ao estado 44
+    DesigExpr   ir ao estado 45
+    AddExpr     ir ao estado 46
+    MulExpr     ir ao estado 47
+    UnExpr      ir ao estado 48
+    LValueExpr  ir ao estado 49
+    PrimExpr    ir ao estado 50
+
+
+Estado 129
+
+   29 Comando: SE ABRE_PAR Expr FECHA_PAR ENTAO Comando SENAO Comando •
+
+    $padrão  reduzir usando a regra 29 (Comando)
