@@ -73,11 +73,12 @@
 #include <stdlib.h>
 extern int yylex();
 extern FILE *yyin;
+extern char *yytext;
 void yyerror(char const *);
 extern int yylineno;
 
 
-#line 81 "goianinha.tab.c"
+#line 82 "goianinha.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -558,13 +559,13 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    60,    60,    63,    64,    65,    68,    71,    72,    75,
-      78,    79,    82,    83,    86,    87,    90,    91,    94,    95,
-      98,    99,   102,   103,   104,   105,   106,   107,   108,   109,
-     110,   111,   112,   115,   116,   117,   120,   121,   124,   125,
-     128,   129,   130,   133,   134,   135,   136,   137,   140,   141,
-     142,   145,   146,   147,   150,   151,   152,   155,   158,   159,
-     160,   161,   162,   163,   166,   167,   170,   171,   172,   173
+       0,    61,    61,    64,    65,    66,    69,    72,    73,    76,
+      79,    80,    83,    84,    87,    88,    91,    92,    95,    96,
+      99,   100,   103,   104,   105,   106,   107,   108,   109,   110,
+     111,   112,   113,   116,   117,   118,   121,   122,   125,   126,
+     129,   130,   131,   134,   135,   136,   137,   138,   141,   142,
+     143,   146,   147,   148,   151,   152,   153,   156,   159,   160,
+     161,   162,   163,   164,   167,   168,   171,   172,   173,   174
 };
 #endif
 
@@ -1212,7 +1213,7 @@ yyreduce:
   switch (yyn)
     {
 
-#line 1216 "goianinha.tab.c"
+#line 1217 "goianinha.tab.c"
 
       default: break;
     }
@@ -1405,8 +1406,9 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 176 "goianinha.y"
+#line 177 "goianinha.y"
  /*Epilogue*/
 void yyerror(char const* msg){
-printf("ERRO: %s %d\n", msg, yylineno); 
+    printf("ERRO SINTÁTICO na linha %d: %s\n", yylineno, msg);
+    printf("Próximo ao token: '%s'\n", yytext);
 }

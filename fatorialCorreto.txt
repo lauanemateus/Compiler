@@ -22,5 +22,4 @@ enquanto (n<0) execute {
         escreva " e: ";
 	escreva fatorial(n);
 	novalinha;
-
 }

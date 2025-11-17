@@ -5,6 +5,7 @@
 #include <stdlib.h>
 extern int yylex();
 extern FILE *yyin;
+extern char *yytext;
 void yyerror(char const *);
 extern int yylineno;
 
@@ -175,5 +176,6 @@ AssignExpr:              OrExpr
                
 %% /*Epilogue*/
 void yyerror(char const* msg){
-printf("ERRO: %s %d\n", msg, yylineno); 
+    printf("ERRO SINTÁTICO na linha %d: %s\n", yylineno, msg);
+    printf("Próximo ao token: '%s'\n", yytext);
 }
