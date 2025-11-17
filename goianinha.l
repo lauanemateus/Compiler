@@ -1,9 +1,10 @@
 %{
 #include "goianinha.tab.h"
-int string_start_line = 0;
+int comment_start_line = 0;
 %}
 
 %option yylineno
+%x COMMENT
 
 %%
 
@@ -21,15 +22,15 @@ int string_start_line = 0;
 "execute"           { return EXECUTE; }
 
 [a-zA-Z_][a-zA-Z0-9_]*    { return ID; }
-[0-9]+                  { return INTCONST; }
+[0-9]+                    { return INTCONST; }
 
-'[^']'                  { return CARCONST; }
+'[^']'                    { return CARCONST; }
 
-\"[^"\n]*\"             { return CONSTSTRING; /* String completa em uma linha */ }
+\"[^"\n]*\"               { return CONSTSTRING; }
 
-\"[^"\n]*$              { printf("ERRO: CADEIA DE CARACTERES NAO TERMINADA na linha %d\n", yylineno); return 0; }
+\"[^"\n]*$                { printf("ERRO: CADEIA DE CARACTERES NAO TERMINADA na linha %d\n", yylineno); return 0; }
 
-\"[^"]*\n[^"]*\"        { printf("ERRO: CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA na linha %d\n", yylineno); return 0; }
+\"[^"]*\n[^"]*\"          { printf("ERRO: CADEIA DE CARACTERES OCUPA MAIS DE UMA LINHA na linha %d\n", yylineno); return 0; }
 
 "+"                 { return MAIS; }
 "-"                 { return MENOS; }
@@ -52,14 +53,17 @@ int string_start_line = 0;
 ";"                 { return PONTO_VIRGULA; }
 ","                 { return VIRGULA; }
 
-[ \t]+             { /* ignorar espaços e tabs */ }
-\n                 { /* ignorar quebras de linha */ }
+[ \t]+              { /* ignorar espaços e tabs */ }
+\n                  { /* ignorar quebras de linha */ }
 
-\/\*([^*]|\*+[^*/])*\*+\/    { /* ignorar comentários corretos */ }
+"/*"                { comment_start_line = yylineno; BEGIN(COMMENT); }
 
-\/\*([^*\/]|\*[^/])*$          { printf("ERRO: COMENTÁRIO NAO TERMINA na linha %d\n", yylineno); return 0; }
+<COMMENT>"*/"       { BEGIN(INITIAL); }
+<COMMENT>\n         { /* permite múltiplas linhas no comentário */ }
+<COMMENT>.          { /* consome qualquer outro caractere */ }
+<COMMENT><<EOF>>    { printf("ERRO: COMENTÁRIO NAO TERMINA na linha %d\n", comment_start_line); return 0; }
 
-.                            { printf("ERRO: CARACTERE INVÁLIDO na linha %d\n", yylineno); return 0; }
+.                   { printf("ERRO: CARACTERE INVÁLIDO na linha %d\n", yylineno); return 0; }
 
 %%
 
